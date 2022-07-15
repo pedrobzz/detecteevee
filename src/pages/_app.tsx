@@ -5,14 +5,20 @@ import React from "react";
 
 import { AppContextProvider } from "../application/common/context/appContext";
 import { AppRouter } from "./api/trpc/[trpc]";
+import "../application/common/style/global.css";
+import { BaseLayout } from "../application/common/layouts";
 
 const App = ({ Component, pageProps }: AppProps): JSX.Element => {
   // https://stackoverflow.com/questions/71809903/next-js-component-cannot-be-used-as-a-jsx-component
   const TypedComponent = Component as unknown as React.FC;
   return (
-    <AppContextProvider>
-      <TypedComponent {...pageProps} />
-    </AppContextProvider>
+    <html className="dark">
+      <AppContextProvider>
+        <BaseLayout>
+          <TypedComponent {...pageProps} />
+        </BaseLayout>
+      </AppContextProvider>
+    </html>
   );
 };
 
