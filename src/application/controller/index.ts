@@ -1,1 +1,1 @@
-export * from "./user/user.controller";
+export * from "./pokemon/pokemon.controller";
