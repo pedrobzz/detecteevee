@@ -9,7 +9,7 @@ export class GetRandomPokemon {
     totalPokemons,
   }: {
     [key: string]: number;
-  }): Promise<Pokemon[]> {
+  }): Promise<Pick<Pokemon, "name" | "id" | "sprites">[]> {
     if (MAX_INDEX < totalPokemons) {
       throw new Error("Max index is less than total pokemons");
     }
@@ -19,7 +19,10 @@ export class GetRandomPokemon {
         return await this.pokemonRepository.getPokemonById(r);
       }),
     );
-    return pokemons;
+    return pokemons.map(pokemon => {
+      const { name, id, sprites } = pokemon;
+      return { name, id, sprites };
+    });
   }
 
   getRandomNumber(min: number, max: number): number;
