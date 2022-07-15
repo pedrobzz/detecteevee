@@ -12,13 +12,11 @@ const App = ({ Component, pageProps }: AppProps): JSX.Element => {
   // https://stackoverflow.com/questions/71809903/next-js-component-cannot-be-used-as-a-jsx-component
   const TypedComponent = Component as unknown as React.FC;
   return (
-    <html className="dark">
-      <AppContextProvider>
-        <BaseLayout>
-          <TypedComponent {...pageProps} />
-        </BaseLayout>
-      </AppContextProvider>
-    </html>
+    <AppContextProvider>
+      <BaseLayout>
+        <TypedComponent {...pageProps} />
+      </BaseLayout>
+    </AppContextProvider>
   );
 };
 
