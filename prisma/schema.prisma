@@ -18,7 +18,7 @@ model Pokemon {
 }
 
 
-model NameGuesserGames {
+model NameGuesserGame {
   id          Int @id @default(autoincrement())
   playerName  String
   createdAt   DateTime @default(now())
