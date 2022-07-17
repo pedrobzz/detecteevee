@@ -40,4 +40,17 @@ export class PrismaNameGuesserGamesRepository
       where: { state: gameState },
     });
   }
+  async getPokemonsByDifficulty(): Promise<{ id: number; losts: number }[]> {
+    const select = await this.client.nameGuesserGame.groupBy({
+      by: ["lostOn"],
+      where: { state: "lost" },
+      _count: {
+        lostOn: true,
+      },
+    });
+    return select.map(item => ({
+      id: item.lostOn as number,
+      losts: item._count.lostOn,
+    }));
+  }
 }

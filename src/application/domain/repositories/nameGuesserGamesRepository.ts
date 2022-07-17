@@ -12,4 +12,5 @@ export interface NameGuesserGamesRepositoryModel {
   getGameByState(
     gameState: NameGuesserGameState["state"],
   ): Promise<NameGuesserGame[]>;
+  getPokemonsByDifficulty(): Promise<{ id: number; losts: number }[]>;
 }
