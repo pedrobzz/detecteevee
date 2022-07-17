@@ -6,25 +6,25 @@ export class GetPokemon {
     pokemonId,
   }: {
     pokemonId: number;
-  }): Promise<Pick<Pokemon, "name" | "id" | "sprites">> {
+  }): Promise<Pick<Pokemon, "name" | "id">> {
     const pokemon = await this.pokemonRepository.getPokemonById(pokemonId);
-    const { name, id, sprites } = pokemon;
-    return { name, id, sprites };
+    const { name, id } = pokemon;
+    return { name, id };
   }
 
   async getMultiplePokemonById({
     pokemonIds,
   }: {
     pokemonIds: number[];
-  }): Promise<Pick<Pokemon, "name" | "id" | "sprites">[]> {
+  }): Promise<Pick<Pokemon, "name" | "id">[]> {
     const pokemons = await Promise.all(
       pokemonIds.map(async pokemonId => {
         return await this.pokemonRepository.getPokemonById(pokemonId);
       }),
     );
     return pokemons.map(pokemon => {
-      const { name, id, sprites } = pokemon;
-      return { name, id, sprites };
+      const { name, id } = pokemon;
+      return { name, id };
     });
   }
 }
