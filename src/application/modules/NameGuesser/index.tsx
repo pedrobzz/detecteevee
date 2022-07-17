@@ -144,7 +144,7 @@ const NameGuesser = ({
               />
             </div>
           </div>
-          <div className="flex gap-10">
+          <div className="flex gap-10 flex-wrap">
             {pokemons.map((pokemon, index) => (
               <button
                 key={pokemon.id}
@@ -167,7 +167,7 @@ const NameGuesser = ({
                       type: "lost",
                       payload: {
                         onLost: onLost,
-                        lostOn: pokemons[index].id,
+                        lostOn: selected.current,
                       },
                     });
                   }

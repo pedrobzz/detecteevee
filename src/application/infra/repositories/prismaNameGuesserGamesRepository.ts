@@ -12,9 +12,10 @@ export class PrismaNameGuesserGamesRepository
     this.client = getPrismaClient();
   }
   async getAllGames(): Promise<NameGuesserGame[]> {
-    const allGames = await this.client.nameGuesserGame.findMany();
-    const sortedByPoint = allGames.sort((a, b) => b.points - a.points);
-    return sortedByPoint;
+    const allGames = await this.client.nameGuesserGame.findMany({
+      orderBy: [{ points: "desc" }, { gameTime: "asc" }],
+    });
+    return allGames;
   }
   async addGame(
     gameState: NameGuesserGameState & { playerName: string },

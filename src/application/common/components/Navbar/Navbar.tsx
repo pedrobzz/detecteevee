@@ -13,7 +13,7 @@ const Navbar = (): JSX.Element => {
       </h1>
       <div className="flex gap-2 text-xl">
         {/* <Link href="/nameGuesser">Name Guesser</Link> */}
-        <Link href="#">Leaderboards</Link>
+        <Link href="/leaderboards">Leaderboards</Link>
       </div>
     </div>
   );
