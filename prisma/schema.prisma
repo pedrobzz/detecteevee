@@ -25,7 +25,7 @@ model NameGuesserGame {
   gameTime    Int
   points      Int
   state       String
-  lostOn      String?
+  lostOn      Int?
   guessed     String
   generation  Int
 }

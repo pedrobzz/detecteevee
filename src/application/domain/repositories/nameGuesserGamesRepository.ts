@@ -1,15 +1,15 @@
 import type { NameGuesserGame } from "@prisma/client";
 import type { NameGuesserGameState } from "../game-states";
 
-export interface NameGuesserGamesRepository {
+export interface NameGuesserGamesRepositoryModel {
   getAllGames(): Promise<NameGuesserGame[]>;
   addGame(
     gameState: NameGuesserGameState & {
       playerName: string;
     },
   ): Promise<NameGuesserGame>;
-  getGameById(gameId: string): Promise<NameGuesserGame | null>;
+  getGameById(gameId: number): Promise<NameGuesserGame | null>;
   getGameByState(
     gameState: NameGuesserGameState["state"],
-  ): Promise<NameGuesserGame | null>;
+  ): Promise<NameGuesserGame[]>;
 }
