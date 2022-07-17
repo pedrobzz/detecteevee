@@ -1,30 +1,24 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import React from "react";
+import Image from "next/image";
+import React, { useState } from "react";
 
 /* import { Container } from "./styles"; */
 import { useTRCP } from "../application/common/hooks/useTRCP";
+import NameGuesser from "../application/modules/NameGuesser";
 
-const NameGuesser: React.FC = (): JSX.Element => {
+const NameGuesserPage: React.FC = (): JSX.Element => {
   // const [name, setName] = useState("");
   // const ctx = useContext(AppContext);
-  const trpc = useTRCP();
-  const pokemons = trpc.useQuery([
-    "pokemon.getRandomPokemon",
-    { MAX_INDEX: 10, totalPokemons: 5 },
-  ]);
+
   return (
-    <div>
-      <h1> Hello, NameGuesser!</h1>
-      <button
-        onClick={() => {
-          console.log(pokemons.data);
-        }}
-      >
-        Log Pokemons
-      </button>
+    <div className="flex items-center flex-col gap-8">
+      <h1 className="text-5xl text-slate-200">Guess the Pokemon</h1>
+      <div>
+        <NameGuesser />
+      </div>
     </div>
   );
 };
 
-export default NameGuesser;
+export default NameGuesserPage;
