@@ -4,7 +4,7 @@ import { makeNameGuesserManager } from "../factories/use-cases";
 
 export const nameGuesserController = trpc
   .router()
-  .query("addGame", {
+  .mutation("addGame", {
     input: z.object({
       startTime: z.number(),
       gameTime: z.number(),
