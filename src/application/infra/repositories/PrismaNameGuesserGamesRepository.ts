@@ -21,10 +21,13 @@ export class PrismaNameGuesserGamesRepository
   ): Promise<NameGuesserGame> {
     const newGame = await this.client.nameGuesserGame.create({
       data: {
-        ...gameState,
-        state: "playing",
-        generation: 1,
+        state: gameState.state,
+        generation: "1",
         guessed: gameState.guessed.join(","),
+        gameTime: gameState.gameTime,
+        playerName: gameState.playerName,
+        points: gameState.points,
+        lostOn: gameState.lostOn,
       },
     });
     return newGame;
