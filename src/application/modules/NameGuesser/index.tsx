@@ -2,38 +2,52 @@
 
 import Image from "next/image";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useTRCP } from "../../common/hooks/useTRCP";
 
 /* import { Container } from "./styles"; */
 
-const NameGuesser = (): JSX.Element => {
+const MAX_POKEMONS = 151;
+const NameGuesser = ({
+  onLose,
+  onWin,
+}: {
+  onLose: (points: number) => void;
+  onWin: (points: number) => void;
+}): JSX.Element => {
   const [guessed, setGuessed] = useState<number[]>([]);
   const getIdsWithoutRepeat = useCallback(
-    (n: number, MAX: number): number[] => {
+    (n = 4, ignore?: number): { current: number; ids: number[] } => {
+      const current = (() => {
+        let id = Math.floor(Math.random() * MAX_POKEMONS) + 1;
+        while (guessed.includes(id) || id === ignore) {
+          id = Math.floor(Math.random() * MAX_POKEMONS) + 1;
+        }
+        return id;
+      })();
       const ids = Array.from(Array(n).keys()).reduce((acc, curr) => {
-        let id = Math.floor(Math.random() * MAX);
-        while (acc.includes(id) || guessed.includes(id)) {
-          id = Math.floor(Math.random() * MAX);
+        let id = Math.floor(Math.random() * MAX_POKEMONS) + 1;
+        while (acc.includes(id) || id === current) {
+          id = Math.floor(Math.random() * MAX_POKEMONS) + 1;
         }
         acc.push(id);
         return acc;
       }, [] as number[]);
-      return ids;
+      const shuffledIds = [...ids, current].sort(() => Math.random() - 0.5);
+      return { current, ids: shuffledIds };
     },
     [guessed],
   );
-  const [randomIds, setRandomIds] = useState<number[]>(
-    getIdsWithoutRepeat(5, 151),
+  const [selected, setSelected] = useState<{ current: number; ids: number[] }>(
+    getIdsWithoutRepeat(),
   );
-  const [selected, setSelected] = useState<number>(
-    Math.floor(Math.random() * 5),
-  );
-  const resetPokemons = useCallback(() => {
-    setRandomIds(getIdsWithoutRepeat(5, 151));
-    setSelected(Math.floor(Math.random() * 5));
-  }, []);
+
   const trpc = useTRCP();
+  const resetPokemons = useCallback(() => {
+    setGuessed(curr => [...curr, selected.current]);
+    const newSelected = getIdsWithoutRepeat(4, selected.current);
+    setSelected(newSelected);
+  }, [selected]);
 
   const {
     data: pokemons,
@@ -41,7 +55,7 @@ const NameGuesser = (): JSX.Element => {
     isError,
     error,
   } = trpc.useQuery(
-    ["pokemon.getMultiplePokemonById", { pokemonIds: randomIds }],
+    ["pokemon.getMultiplePokemonById", { pokemonIds: selected.ids }],
     {
       refetchOnWindowFocus: false,
       onError: resetPokemons,
@@ -60,7 +74,7 @@ const NameGuesser = (): JSX.Element => {
           <div className="flex flex-col items-center border-purple-900 border-2 rounded-xl p-4 w-fit">
             <div className="m-[-50px]">
               <Image
-                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemons[selected].id}.png`}
+                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${selected.current}.png`}
                 height={256}
                 width={256}
                 className=""
@@ -73,13 +87,15 @@ const NameGuesser = (): JSX.Element => {
                 key={pokemon.id}
                 className={`flex items-center justify-center border-purple-900 border-2 rounded-xl p-4 cursor-pointer text-white`}
                 onClick={() => {
-                  if (index === selected) {
+                  if (pokemons[index].id === selected.current) {
+                    if (points + 1 === MAX_POKEMONS) {
+                      return onWin(points + 1);
+                    }
+                    resetPokemons();
                     setPoints(points + 1);
-                    setGuessed(curr => [...curr, pokemons[index].id]);
                   } else {
-                    setPoints(0);
+                    onLose(points);
                   }
-                  resetPokemons();
                 }}
               >
                 {pokemon.name}
