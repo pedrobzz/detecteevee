@@ -1,4 +1,4 @@
-import type { NameGuesserGame } from "@prisma/client";
+import type { NameGuesserGame, Pokemon } from "@prisma/client";
 import type { NameGuesserGameState } from "../game-states";
 
 export interface NameGuesserGamesRepositoryModel {
@@ -12,5 +12,5 @@ export interface NameGuesserGamesRepositoryModel {
   getGameByState(
     gameState: NameGuesserGameState["state"],
   ): Promise<NameGuesserGame[]>;
-  getPokemonsByDifficulty(): Promise<{ id: number; losts: number }[]>;
+  getPokemonsByDifficulty(): Promise<{ pokemon: Pokemon; losts: number }[]>;
 }

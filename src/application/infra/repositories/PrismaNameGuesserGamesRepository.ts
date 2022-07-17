@@ -1,13 +1,14 @@
-import type { NameGuesserGame, PrismaClient } from "@prisma/client";
+import type { NameGuesserGame, Pokemon, PrismaClient } from "@prisma/client";
 import type { NameGuesserGameState } from "../../domain/game-states";
 import type { NameGuesserGamesRepositoryModel } from "../../domain/repositories/nameGuesserGamesRepository";
+import { PokemonRepositoryModel } from "../../domain/repositories/pokemonRepository";
 import { getPrismaClient } from "../../factories";
 
 export class PrismaNameGuesserGamesRepository
   implements NameGuesserGamesRepositoryModel
 {
   client: PrismaClient;
-  constructor() {
+  constructor(private readonly pokemonRepository: PokemonRepositoryModel) {
     this.client = getPrismaClient();
   }
   async getAllGames(): Promise<NameGuesserGame[]> {
@@ -40,7 +41,9 @@ export class PrismaNameGuesserGamesRepository
       where: { state: gameState },
     });
   }
-  async getPokemonsByDifficulty(): Promise<{ id: number; losts: number }[]> {
+  async getPokemonsByDifficulty(): Promise<
+    { pokemon: Pokemon; losts: number }[]
+  > {
     const select = await this.client.nameGuesserGame.groupBy({
       by: ["lostOn"],
       where: { state: "lost" },
@@ -48,8 +51,12 @@ export class PrismaNameGuesserGamesRepository
         lostOn: true,
       },
     });
+    const ids = select.map(s => s.lostOn as number);
+    const pokemons = (await this.pokemonRepository.getMultiplePokemonById(
+      ids,
+    )) as Pokemon[];
     return select.map(item => ({
-      id: item.lostOn as number,
+      pokemon: pokemons.find(p => p.id === item.lostOn) as Pokemon,
       losts: item._count.lostOn,
     }));
   }
