@@ -4,19 +4,12 @@ import Image from "next/image";
 
 import React, { useCallback, useReducer, useState } from "react";
 import { useTRCP } from "../../common/hooks/useTRCP";
+import { NameGuesserGameState } from "../../domain/game-states";
 
 /* import { Container } from "./styles"; */
-export type GameDataState = {
-  startTime: number;
-  gameTime: number;
-  points: number;
-  state: "playing" | "lost" | "win";
-  lostOn?: number;
-  guessed: number[];
-};
 
 const gameDataReducer = (
-  state: GameDataState,
+  state: NameGuesserGameState,
   action:
     | {
         type: "rightGuess";
@@ -27,18 +20,18 @@ const gameDataReducer = (
     | {
         type: "win";
         payload: {
-          onWin: (data: GameDataState) => void;
+          onWin: (data: NameGuesserGameState) => void;
         };
       }
     | {
         type: "lost";
         payload: {
-          onLost: (data: GameDataState) => void;
+          onLost: (data: NameGuesserGameState) => void;
           lostOn: number;
         };
       },
 ) => {
-  let newState: GameDataState;
+  let newState: NameGuesserGameState;
   switch (action.type) {
     case "rightGuess":
       const { guess } = action.payload;
@@ -78,8 +71,8 @@ const NameGuesser = ({
   onLost,
   onWin,
 }: {
-  onLost: (state: GameDataState) => void;
-  onWin: (state: GameDataState) => void;
+  onLost: (state: NameGuesserGameState) => void;
+  onWin: (state: NameGuesserGameState) => void;
 }): JSX.Element => {
   const [{ points, guessed }, dispatch] = useReducer(gameDataReducer, {
     startTime: Date.now(),

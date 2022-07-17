@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import React, { useState } from "react";
+import { NameGuesserGameState } from "../application/domain/game-states";
 
 /* import { Container } from "./styles"; */
-import NameGuesser, { GameDataState } from "../application/modules/NameGuesser";
+import NameGuesser from "../application/modules/NameGuesser";
 
 const NameGuesserPage: React.FC = (): JSX.Element => {
   // const ctx = useContext(AppContext);
@@ -13,7 +14,7 @@ const NameGuesserPage: React.FC = (): JSX.Element => {
     "playing" | "win" | "lost" | "waiting"
   >("waiting");
   const [{ gameTime, points, lostOn, guessed }, setGameData] =
-    useState<GameDataState>({
+    useState<NameGuesserGameState>({
       gameTime: 0,
       guessed: [],
       points: 0,
