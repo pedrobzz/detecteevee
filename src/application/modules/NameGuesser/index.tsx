@@ -2,20 +2,92 @@
 
 import Image from "next/image";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useReducer, useState } from "react";
 import { useTRCP } from "../../common/hooks/useTRCP";
 
 /* import { Container } from "./styles"; */
+export type GameDataState = {
+  startTime: number;
+  gameTime: number;
+  points: number;
+  state: "playing" | "lost" | "win";
+  lostOn?: number;
+  guessed: number[];
+};
+
+const gameDataReducer = (
+  state: GameDataState,
+  action:
+    | {
+        type: "rightGuess";
+        payload: {
+          guess: number;
+        };
+      }
+    | {
+        type: "win";
+        payload: {
+          onWin: (data: GameDataState) => void;
+        };
+      }
+    | {
+        type: "lost";
+        payload: {
+          onLost: (data: GameDataState) => void;
+          lostOn: number;
+        };
+      },
+) => {
+  let newState: GameDataState;
+  switch (action.type) {
+    case "rightGuess":
+      const { guess } = action.payload;
+      console.log("right guess");
+      return {
+        ...state,
+        points: state.points + 1,
+        guessed: [...state.guessed, guess],
+      };
+    case "win":
+      const { onWin } = action.payload;
+      newState = {
+        ...state,
+        state: "win",
+        points: state.points + 1,
+        gameTime: Date.now() - state.startTime,
+      };
+      onWin(newState);
+      return newState;
+    case "lost":
+      const { onLost, lostOn } = action.payload;
+      newState = {
+        ...state,
+        state: "lost",
+        lostOn,
+        gameTime: Date.now() - state.startTime,
+      };
+      onLost(newState);
+      return newState;
+    default:
+      return state;
+  }
+};
 
 const MAX_POKEMONS = 151;
 const NameGuesser = ({
-  onLose,
+  onLost,
   onWin,
 }: {
-  onLose: (points: number) => void;
-  onWin: (points: number) => void;
+  onLost: (state: GameDataState) => void;
+  onWin: (state: GameDataState) => void;
 }): JSX.Element => {
-  const [guessed, setGuessed] = useState<number[]>([]);
+  const [{ points, guessed }, dispatch] = useReducer(gameDataReducer, {
+    startTime: Date.now(),
+    gameTime: 0,
+    points: 0,
+    state: "playing",
+    guessed: [],
+  });
   const getIdsWithoutRepeat = useCallback(
     (n = 4, ignore?: number): { current: number; ids: number[] } => {
       const current = (() => {
@@ -44,7 +116,6 @@ const NameGuesser = ({
 
   const trpc = useTRCP();
   const resetPokemons = useCallback(() => {
-    setGuessed(curr => [...curr, selected.current]);
     const newSelected = getIdsWithoutRepeat(4, selected.current);
     setSelected(newSelected);
   }, [selected]);
@@ -61,7 +132,6 @@ const NameGuesser = ({
       onError: resetPokemons,
     },
   );
-  const [points, setPoints] = useState(0);
   if (isError) {
     return <div>Unexpected Error Happened. {error.message}</div>;
   }
@@ -89,12 +159,24 @@ const NameGuesser = ({
                 onClick={() => {
                   if (pokemons[index].id === selected.current) {
                     if (points + 1 === MAX_POKEMONS) {
-                      return onWin(points + 1);
+                      return dispatch({
+                        type: "win",
+                        payload: { onWin: onWin },
+                      });
                     }
                     resetPokemons();
-                    setPoints(points + 1);
+                    return dispatch({
+                      type: "rightGuess",
+                      payload: { guess: pokemons[index].id },
+                    });
                   } else {
-                    onLose(points);
+                    return dispatch({
+                      type: "lost",
+                      payload: {
+                        onLost: onLost,
+                        lostOn: pokemons[index].id,
+                      },
+                    });
                   }
                 }}
               >
