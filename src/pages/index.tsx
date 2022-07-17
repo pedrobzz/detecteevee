@@ -11,7 +11,7 @@ const Home = (): JSX.Element => {
   // const hello = trpc.useQuery(["user.hello", name]);
   return (
     <div className="flex items-center flex-col gap-8">
-      <h1 className="text-5xl text-slate-200">Select Your Game</h1>
+      <h1 className="text-5xl text-slate-200 text-center">Select Your Game</h1>
       <div>
         <Link href="/nameGuesser">
           <div className="flex flex-col items-center border-purple-900 border-2 rounded-xl p-4 cursor-pointer">
