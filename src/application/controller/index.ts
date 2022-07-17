@@ -1,1 +1,2 @@
-export * from "./pokemon/pokemon.controller";
+export * from "./pokemon.controller";
+export * from "./nameGuesser.controller";

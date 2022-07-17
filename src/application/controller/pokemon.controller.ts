@@ -1,6 +1,6 @@
 import * as trpc from "@trpc/server";
 import { z } from "zod";
-import { makeGetPokemon } from "../../factories";
+import { makeGetPokemon } from "../factories";
 
 export const pokemonController = trpc
   .router()
