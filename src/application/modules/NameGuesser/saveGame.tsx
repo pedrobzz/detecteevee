@@ -29,8 +29,17 @@ const SaveGameNameGuesser = ({
           <form
             onSubmit={e => {
               e.preventDefault();
-              gameMutation({ ...gameData, playerName: name });
-              setSaved(true);
+              gameMutation(
+                { ...gameData, playerName: name },
+                {
+                  onSuccess: () => {
+                    setSaved(true);
+                  },
+                  onError: () => {
+                    alert("Erro ao Salvar. Tente novamente");
+                  },
+                },
+              );
             }}
             className="flex flex-col gap-5"
           >
